@@ -9,33 +9,26 @@ on:
 
 jobs:
   build:
-    # 複数 OS でテストしたい場合は matrix を使う
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Install build tools (macOS)
-      if: runner.os == 'macOS'
-      run: brew install gcc make
+    # Windows は MSYS2 で Bash が使えるようにセットアップ
+    - name: Setup MSYS2 (Windows)
+      if: runner.os == 'Windows'
+      uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: make gcc
 
-    - name: Build Lua
-      # upstream Lua の Makefile ではターゲット名が os ごとに違うので条件分岐
+    - name: Build & Run Tests
+      # Windows でも Bash 上で make を呼び出せば OK
+      shell: bash
       run: |
-        if [ "${{ runner.os }}" = "Linux" ]; then
-          make linux
-        else
-          make macos
-        fi
+        make all test
 
-    - name: Run tests
-      run: |
-        if [ "${{ runner.os }}" = "Linux" ]; then
-          make test
-        else
-          make test
-        fi
