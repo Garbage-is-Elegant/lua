@@ -1,0 +1,44 @@
+name: C CI
+
+# main(master) への push と PR 作成／更新時に走る
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build:
+    # 複数 OS でテストしたい場合は matrix を使う
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install build tools
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y build-essential
+    - name: Install build tools (macOS)
+      if: runner.os == 'macOS'
+      run: brew install gcc make
+
+    - name: Build Lua
+      # upstream Lua の Makefile ではターゲット名が os ごとに違うので条件分岐
+      run: |
+        if [ "${{ runner.os }}" = "Linux" ]; then
+          make linux
+        else
+          make macos
+        fi
+
+    - name: Run tests
+      run: |
+        if [ "${{ runner.os }}" = "Linux" ]; then
+          make test
+        else
+          make test
+        fi
