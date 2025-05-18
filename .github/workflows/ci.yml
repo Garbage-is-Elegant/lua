@@ -28,7 +28,7 @@ jobs:
 
     - name: Build & Run Tests
       shell: bash
-      run: |
+      run:
         cd testes
 	../lua all.lua
 
