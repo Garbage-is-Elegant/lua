@@ -27,8 +27,8 @@ jobs:
         install: make gcc
 
     - name: Build & Run Tests
-      # Windows でも Bash 上で make を呼び出せば OK
       shell: bash
       run: |
-        make all test
+        cd testes
+	../lua all.lua
 
