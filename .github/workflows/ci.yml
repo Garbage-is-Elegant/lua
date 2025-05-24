@@ -28,9 +28,4 @@ jobs:
 
     - name: Build & Run Tests
       shell: bash
-      run: |
-        mkdir build
-	cd build
-	cmake ..
-	make
-	ctest --output-on-failure -j ${{ runner.cores }}
+      run: mkdir build && cd build && cmake .. && make && ctest --output-on-failure -j ${{ runner.cores }}
