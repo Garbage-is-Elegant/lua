@@ -30,10 +30,16 @@ set_target_properties(luacore PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
+target_include_directories(luacore PUBLIC ${LUA_ROOT})
+
 # Shared library configuration
 if(BUILD_SHARED_LIBS)
     add_library(lua_shared SHARED ${LUA_CORE_SOURCES})
-    target_link_libraries(lua_shared PRIVATE m)
+    if(UNIX)
+        target_link_libraries(lua_shared PRIVATE luacore m)
+    else()
+        target_link_libraries(lua_shared PRIVATE luacore)
+    endif()
     set_target_properties(lua_shared PROPERTIES
         OUTPUT_NAME lua
         PREFIX ""
@@ -41,14 +47,16 @@ if(BUILD_SHARED_LIBS)
     )
 endif()
 
-# Include directories per target
-target_include_directories(luacore PUBLIC ${LUA_ROOT})
-
-
-
 # Lua interpreter executable
 add_executable(lua ${LUA_ROOT}/lua.c)
-target_link_libraries(lua PRIVATE luacore m)
+# Link on Unix-like systems to math library
+if(UNIX)
+    target_link_libraries(lua PRIVATE luacore m)
+else()
+    target_link_libraries(lua PRIVATE luacore)
+endif()
+
+target_include_directories(lua PRIVATE ${LUA_ROOT})
 
 # Install rules
 install(TARGETS luacore lua
