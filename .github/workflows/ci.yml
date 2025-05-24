@@ -26,6 +26,9 @@ jobs:
         update: true
         install: make gcc
 
+    - name: Configure
+      run: mkdir build && cmake -S . -B build
+
     - name: Build & Run Tests
       shell: bash
-      run: mkdir build && cd build && cmake .. && make && ctest --output-on-failure -j ${{ runner.cores }}
+      run: cmake --build build --config Release && cd buld && ctest --output-on-failure -j ${{ runner.cores }}
