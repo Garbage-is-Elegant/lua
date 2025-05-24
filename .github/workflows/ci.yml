@@ -28,5 +28,4 @@ jobs:
 
     - name: Build & Run Tests
       shell: bash
-      run: mkdir build && cd build && cmake .. && ctest
-
+      run: mkdir build && cd build && cmake .. && make && ctest
