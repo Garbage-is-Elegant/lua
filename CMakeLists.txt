@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 99)
 
 # Options
 option(BUILD_SHARED_LIBS "Build Lua as shared library" OFF)
-option(BUILD_TESTING "Build Lua test suite" ON)
+option(BUILD_TESTING "Enable Lua test suite" ON)
 
 # Include CTest for test discovery
 include(CTest)
@@ -18,12 +18,12 @@ endif()
 # Source directory
 set(LUA_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Collect all Lua core sources (excluding interpreter and compiler)
+# Collect all Lua core sources (excluding interpreter, compiler, and single-file builds)
 file(GLOB LUA_CORE_SOURCES "${LUA_ROOT}/*.c")
-# Exclude lua.c (interpreter) and luac.c (compiler, if present)
-list(FILTER LUA_CORE_SOURCES EXCLUDE REGEX "/lua\.c$|/luac\.c$")
+# Exclude lua.c, luac.c, onelua.c
+list(FILTER LUA_CORE_SOURCES EXCLUDE REGEX "/lua\\.c$|/luac\\.c$|/onelua\\.c$")
 
-# Library target
+# Core library target
 add_library(luacore STATIC ${LUA_CORE_SOURCES})
 set_target_properties(luacore PROPERTIES
     OUTPUT_NAME lua
@@ -32,24 +32,23 @@ set_target_properties(luacore PROPERTIES
 
 # Shared library configuration
 if(BUILD_SHARED_LIBS)
-    set_target_properties(luacore PROPERTIES
-        PREFIX ""
-        WINDOWS_EXPORT_ALL_SYMBOLS ON
-        SUFFIX ".so"
-    )
     add_library(lua_shared SHARED ${LUA_CORE_SOURCES})
     target_link_libraries(lua_shared PRIVATE m)
-    set_target_properties(lua_shared PROPERTIES OUTPUT_NAME lua)
+    set_target_properties(lua_shared PROPERTIES
+        OUTPUT_NAME lua
+        PREFIX ""
+        WINDOWS_EXPORT_ALL_SYMBOLS ON
+    )
 endif()
 
 # Include directories per target
 target_include_directories(luacore PUBLIC ${LUA_ROOT})
 
-# Lua interpreter
+
+
+# Lua interpreter executable
 add_executable(lua ${LUA_ROOT}/lua.c)
 target_link_libraries(lua PRIVATE luacore m)
-
-target_include_directories(lua PRIVATE ${LUA_ROOT})
 
 # Install rules
 install(TARGETS luacore lua
@@ -62,7 +61,7 @@ install(DIRECTORY ${LUA_ROOT}/
     FILES_MATCHING PATTERN "*.h"
 )
 
-# Tests: register each .lua in testes as a ctest
+# Tests: discover .lua scripts under testes directory
 if(BUILD_TESTING)
     file(GLOB TEST_SCRIPTS "${LUA_ROOT}/testes/*.lua")
     foreach(test_script ${TEST_SCRIPTS})
