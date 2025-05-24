@@ -28,5 +28,5 @@ jobs:
 
     - name: Build & Run Tests
       shell: bash
-      run: make && cd testes && ../lua all.lua
+      run: mkdir build && cd build && cmake .. && ctest
 
