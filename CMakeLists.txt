@@ -16,7 +16,6 @@ include(CTest)
 # Enable testing if requested
 if(BUILD_TESTING)
   enable_testing()
-endif()()
 endif()
 
 # Source directory
