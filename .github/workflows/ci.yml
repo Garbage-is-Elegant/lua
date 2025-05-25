@@ -31,4 +31,4 @@ jobs:
 
     - name: Build & Run Tests
       shell: bash
-      run: cmake --build build --config Release && cd build && ctest --output-on-failure -j ${{ runner.cores }}
+      run: cmake --build build --config Release && cd build && ctest --output-on-failure -C Release -j ${{ runner.cores }}
