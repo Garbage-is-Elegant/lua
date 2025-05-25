@@ -10,6 +10,9 @@ option(BUILD_TESTING "Enable Lua test suite" ON)
 # Include CTest for test discovery
 include(CTest)
 
+# For multi-configuration generators (e.g., Visual Studio), set default config for CTest
+set(CTEST_CONFIGURATION_TYPE "Release")
+
 # Enable testing if requested
 if(BUILD_TESTING)
   enable_testing()
