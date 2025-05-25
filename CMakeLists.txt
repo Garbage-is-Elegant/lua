@@ -7,9 +7,8 @@ set(CMAKE_C_STANDARD 99)
 option(BUILD_SHARED_LIBS "Build Lua as shared library" OFF)
 option(BUILD_TESTING "Enable Lua test suite" ON)
 
-# Set default config for multi-configuration generators (e.g., Visual Studio)
-# Force Release configuration for CTest
-set(CTEST_CONFIGURATION_TYPE "Release" CACHE STRING "Configuration for CTest" FORCE)
+# For multi-configuration generators (e.g., Visual Studio), set default test configuration
+set_property(GLOBAL PROPERTY CTEST_TARGET_CONFIGURATION "Release")
 
 # Include CTest for test discovery
 include(CTest)
